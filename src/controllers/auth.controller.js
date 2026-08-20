@@ -1,6 +1,6 @@
 const authService = require('../services/auth.service');
 
-// Elimina la contraseña del objeto de usuario antes de enviarlo en la respuesta
+// Saca la contraseña antes de responder
 const sanitizeUser = (user) => {
   const { password, ...safeUser } = user.toObject();
   return safeUser;
@@ -8,8 +8,8 @@ const sanitizeUser = (user) => {
 
 const register = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
-    const { user, token } = await authService.register({ firstName, lastName, email, password });
+    const { firstName, lastName, email, password, profileImage } = req.body;
+    const { user, token } = await authService.register({ firstName, lastName, email, password, profileImage });
     res.status(201).json({ user: sanitizeUser(user), token });
   } catch (error) {
     next(error);
@@ -35,7 +35,7 @@ const me = async (req, res, next) => {
   }
 };
 
-// El logout con JWT es manejado por el cliente (descarte del token); se expone el endpoint por consistencia con la API
+// Con JWT el logout lo hace el cliente descartando el token; existe por consistencia con la API
 const logout = async (_req, res) => {
   res.status(200).json({ message: 'Sesión cerrada correctamente' });
 };

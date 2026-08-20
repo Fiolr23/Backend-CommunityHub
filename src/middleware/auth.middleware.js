@@ -1,11 +1,11 @@
 const { verifyToken } = require('../utils/jwt');
 
-// Verifica el token JWT enviado en el header Authorization y adjunta el id del usuario a la request
+// Valida el JWT del header Authorization y agrega el id de usuario a la request
 const protect = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'No autorizado, token no proporcionado' });
+    return res.status(401).json({ success: false, message: 'No autenticado' });
   }
 
   try {
@@ -15,7 +15,8 @@ const protect = (req, res, next) => {
     req.userRole = decoded.role;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Token inválido o expirado' });
+    // jwt.verify lanza TokenExpiredError o JsonWebTokenError; ambos son 401 para el cliente
+    res.status(401).json({ success: false, message: 'Token inválido o expirado' });
   }
 };
 
