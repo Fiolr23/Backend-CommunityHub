@@ -116,6 +116,13 @@ const updateEvent = async (id, data, userId, userRole) => {
     throw error;
   }
 
+  // Una actividad finalizada queda de solo lectura para edicion, incluso para el admin
+  if (event.status === 'completed') {
+    const error = new Error('La actividad finalizada no puede ser editada');
+    error.statusCode = 409;
+    throw error;
+  }
+
   const updates = pickAllowedFields(data);
 
   // Solo valida "no en el pasado" si la fecha/hora realmente cambia; si no, editar otro campo
