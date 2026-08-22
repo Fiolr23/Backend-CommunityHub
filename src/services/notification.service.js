@@ -1,9 +1,8 @@
 const Notification = require('../models/Notification');
 
-// Un admin ve todas las notificaciones; un organizador solo ve las de sus propias actividades
-const listNotifications = async (userId, role) => {
-  const filters = role === 'admin' ? {} : { organizer: userId };
-  return Notification.find(filters).populate('event', 'title date hour location').sort({ createdAt: -1 });
+// Cada usuario ve solo sus propias notificaciones, sin importar el rol (tampoco el admin)
+const listNotifications = async (userId) => {
+  return Notification.find({ organizer: userId }).populate('event', 'title date hour location').sort({ createdAt: -1 });
 };
 
 // Nadie puede marcar como leida una notificacion de otro usuario, ni siquiera el admin

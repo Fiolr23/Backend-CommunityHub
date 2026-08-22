@@ -2,7 +2,7 @@ const notificationService = require('../services/notification.service');
 
 const listNotifications = async (req, res, next) => {
   try {
-    const notifications = await notificationService.listNotifications(req.userId, req.userRole);
+    const notifications = await notificationService.listNotifications(req.userId);
     res.status(200).json({ notifications });
   } catch (error) {
     next(error);
