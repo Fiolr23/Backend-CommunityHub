@@ -33,8 +33,6 @@ app.use((_req, res) => {
 // Manejador de errores centralizado: traduce cualquier error a una respuesta JSON consistente
 // y nunca expone detalles internos de Mongoose/Mongo/JWT al cliente.
 app.use((err, _req, res, _next) => {
-  console.error(err);
-
   let statusCode = err.statusCode;
   let message = err.message;
 
@@ -59,6 +57,7 @@ app.use((err, _req, res, _next) => {
   }
 
   if (statusCode === 500) {
+    console.error(err);
     message = 'Error interno del servidor';
   }
 
