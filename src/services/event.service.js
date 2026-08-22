@@ -1,5 +1,6 @@
 const Event = require('../models/Event');
 const Category = require('../models/Category');
+const Registration = require('../models/Registration');
 
 const ALLOWED_FIELDS = ['title', 'description', 'category', 'date', 'hour', 'location', 'capacity', 'image', 'status'];
 
@@ -155,6 +156,13 @@ const deleteEvent = async (id, userId, userRole) => {
   if (userRole !== 'admin' && event.organizer.toString() !== userId) {
     const error = new Error('No puede eliminar actividades de otro organizador');
     error.statusCode = 403;
+    throw error;
+  }
+
+  const hasRegistrations = await Registration.exists({ event: id });
+  if (hasRegistrations) {
+    const error = new Error('No se puede eliminar una actividad con inscripciones; cancélela en su lugar');
+    error.statusCode = 409;
     throw error;
   }
 
