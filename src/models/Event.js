@@ -50,6 +50,15 @@ const eventSchema = new mongoose.Schema(
       enum: ['active', 'completed', 'cancelled'],
       default: 'active',
     },
+    // Contador atomico de inscripciones. Se mantiene junto con la coleccion Registration
+    // (fuente de verdad de quien esta inscrito) para poder validar el cupo con una unica
+    // operacion atomica por documento y evitar que se supere la capacidad ante inscripciones
+    // simultaneas. Ver registration.service.js.
+    registeredCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
   { timestamps: { createdAt: true, updatedAt: true } }
 );
