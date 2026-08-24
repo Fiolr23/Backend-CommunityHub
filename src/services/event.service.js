@@ -53,14 +53,35 @@ const syncCompletedEvents = async () => {
   }
 };
 
-// Lista eventos, con filtros opcionales por categoria, estado u organizador
-const listEvents = async ({ category, status, organizer } = {}) => {
+// Lista eventos, con filtros opcionales por categoria, estado, organizador, texto, fecha, ubicacion y disponibilidad.
+// Todos los parametros son opcionales y se combinan con AND; sin parametros el comportamiento no cambia.
+const listEvents = async ({ category, status, organizer, search, date, location, available } = {}) => {
   await syncCompletedEvents();
 
   const filters = {};
   if (category) filters.category = category;
   if (status) filters.status = status;
   if (organizer) filters.organizer = organizer;
+
+  if (search) {
+    filters.$or = [
+      { title: { $regex: search, $options: 'i' } },
+      { description: { $regex: search, $options: 'i' } },
+    ];
+  }
+
+  if (date) {
+    // "date" se guarda anclado a medianoche UTC (mismo criterio que combineDateAndHour):
+    // se filtra por el dia calendario completo en UTC.
+    const dayStart = new Date(`${date}T00:00:00.000Z`);
+    const dayEnd = new Date(`${date}T23:59:59.999Z`);
+    filters.date = { $gte: dayStart, $lte: dayEnd };
+  }
+
+  if (location) filters.location = { $regex: location, $options: 'i' };
+
+  // Misma condicion atomica que usa registration.service.js para validar cupo disponible
+  if (available === 'true') filters.$expr = { $lt: ['$registeredCount', '$capacity'] };
 
   return Event.find(filters)
     .populate('organizer', 'firstName lastName email')
@@ -169,4 +190,4 @@ const deleteEvent = async (id, userId, userRole) => {
   await event.deleteOne();
 };
 
-module.exports = { listEvents, getEventById, createEvent, updateEvent, deleteEvent };
+module.exports = { listEvents, getEventById, createEvent, updateEvent, deleteEvent, syncCompletedEvents };

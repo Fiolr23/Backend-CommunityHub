@@ -7,6 +7,8 @@ const userRoutes = require('./routes/user.routes');
 const notificationRoutes = require('./routes/notification.routes');
 const categoryRoutes = require('./routes/category.routes');
 const uploadRoutes = require('./routes/upload.routes');
+const dashboardRoutes = require('./routes/dashboard.routes');
+const registrationRoutes = require('./routes/registration.routes');
 
 const app = express();
 
@@ -24,6 +26,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/uploads', uploadRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/registrations', registrationRoutes);
 
 // Ruta no encontrada: respuesta JSON consistente
 app.use((_req, res) => {

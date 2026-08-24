@@ -115,4 +115,20 @@ const listMyRegistrations = async (userId) => {
     .sort({ createdAt: -1 });
 };
 
-module.exports = { registerForEvent, cancelRegistration, listMyRegistrations };
+// Inscripciones vistas por quien organiza: un organizador ve las de sus propias actividades,
+// un admin ve todas (mismo query, solo cambia el filtro de eventos de origen).
+const listRegistrationsForViewer = async (userId, userRole) => {
+  const eventFilter = userRole === 'admin' ? {} : { organizer: userId };
+  const eventIds = await Event.find(eventFilter).distinct('_id');
+
+  return Registration.find({ event: { $in: eventIds } })
+    .populate('user', 'firstName lastName email')
+    .populate({
+      path: 'event',
+      select: 'title date hour organizer',
+      populate: { path: 'organizer', select: 'firstName lastName email' },
+    })
+    .sort({ createdAt: -1 });
+};
+
+module.exports = { registerForEvent, cancelRegistration, listMyRegistrations, listRegistrationsForViewer };
