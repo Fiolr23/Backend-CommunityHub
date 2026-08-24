@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const eventController = require('../controllers/event.controller');
 const registrationController = require('../controllers/registration.controller');
+const favoriteController = require('../controllers/favorite.controller');
 const { protect } = require('../middleware/auth.middleware');
 const { authorize } = require('../middleware/authorize.middleware');
 
@@ -20,5 +21,9 @@ router.delete('/:id', protect, authorize('organizer', 'admin'), eventController.
 // Inscripcion a la actividad: cualquier usuario autenticado puede inscribirse/cancelar su propia inscripcion
 router.post('/:id/register', protect, registrationController.register);
 router.delete('/:id/register', protect, registrationController.unregister);
+
+// Favoritos: cualquier usuario autenticado puede marcar/quitar su propia actividad favorita
+router.post('/:id/favorite', protect, favoriteController.addFavorite);
+router.delete('/:id/favorite', protect, favoriteController.removeFavorite);
 
 module.exports = router;
