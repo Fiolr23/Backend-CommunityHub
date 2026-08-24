@@ -27,4 +27,13 @@ const listMyRegistrations = async (req, res, next) => {
   }
 };
 
-module.exports = { register, unregister, listMyRegistrations };
+const listRegistrations = async (req, res, next) => {
+  try {
+    const registrations = await registrationService.listRegistrationsForViewer(req.userId, req.userRole);
+    res.status(200).json({ registrations });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { register, unregister, listMyRegistrations, listRegistrations };
